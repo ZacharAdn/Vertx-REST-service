@@ -1,4 +1,4 @@
-# The Simplest Vert.x-web Server
+# Vert.x-web Server
 
 This is a sample project to show the minimal deployment of a `vertx-web` based routing
 HTTP server.
