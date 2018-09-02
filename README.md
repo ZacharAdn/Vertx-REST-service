@@ -15,3 +15,12 @@ To test:
 ```
 curl http://localhost:8080/
 ```
+
+vertx mongo client:
+```
+<dependency>
+    <groupId>io.vertx</groupId>
+    <artifactId>vertx-mongo-client</artifactId>
+    <version>3.5.3</version>
+</dependency>
+```
