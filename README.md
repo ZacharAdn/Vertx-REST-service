@@ -2,7 +2,8 @@
 
 This project display deployment of a `vertx-web` based routing
 HTTP server 
-Using mongoDB as NoSQL database `vertx-mongo-client`, which allows storing and retrieving data efficiently and quickly even when the amount of data in the database is very large
+
+Using mongoDB as NoSQL database through `vertx-mongo-client`, which allows storing and retrieving data efficiently and quickly even when the amount of data in the database is very large
 
 An HTTP client POSTs a JSON object with the string property “​text​" and get JSON response with the fields "value" and "lexical" containing a words close to the numerical value and lexicographic value of the input word
 
