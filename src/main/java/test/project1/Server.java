@@ -14,7 +14,7 @@ import java.util.List;
 
 
 /**
- *
+ * Server Class
  */
 public class Server extends AbstractVerticle {
 
@@ -22,7 +22,7 @@ public class Server extends AbstractVerticle {
 	private String COLLECTION = "words";
 
 	/**
-	 *
+	 * Configure and start connection
 	 * @param fut
 	 * @throws Exception
 	 */
@@ -59,7 +59,7 @@ public class Server extends AbstractVerticle {
 
 
 	/**
-	 * handle anything POSTed to /analyze
+	 * Handle anything POSTed to /analyze
 	 * @param context RoutingContext
 	 */
 	private void analyze(RoutingContext context) {
@@ -200,7 +200,7 @@ public class Server extends AbstractVerticle {
 	}
 
 	/**
-	 * insert the input word to the database
+	 * Insert the input word to the database
 	 * @param text input word
 	 * @param val input word value
 	 */
@@ -216,7 +216,7 @@ public class Server extends AbstractVerticle {
 	}
 
 	/**
-	 * get word from mongocient find results
+	 * Get word from database client find results
 	 * @param h handler
 	 * @return word
 	 */
