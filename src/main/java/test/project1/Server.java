@@ -33,7 +33,7 @@ public class Server extends AbstractVerticle {
 		// create Http server and listen to 9000 port
 		vertx.createHttpServer().requestHandler(router::accept)
 				.listen(
-						config().getInteger("http.port", 9000),
+						config().getInteger("http.port", 8080),
 						result -> {
 							if (result.succeeded()) {
 								fut.complete();
@@ -60,7 +60,7 @@ public class Server extends AbstractVerticle {
 
 	/**
 	 * handle anything POSTed to /analyze
-	 * @param context
+	 * @param context RoutingContext
 	 */
 	private void analyze(RoutingContext context) {
 		// get the input in lower case alphabet
@@ -166,7 +166,6 @@ public class Server extends AbstractVerticle {
 
 				    if (!ltR.result().isEmpty()) {
 						String lWord = getWord(ltR);
-						System.out.println(lWord + "(" + compareStrings(text, lWord) + "), " + text + ", " + gWord + "(" + compareStrings(gWord, text) + ")");
 
 						// compare between the words differences
 						if (compareStrings(text, lWord) < compareStrings(gWord, text))
@@ -218,7 +217,7 @@ public class Server extends AbstractVerticle {
 
 	/**
 	 * get word from mongocient find results
-	 * @param h
+	 * @param h handler
 	 * @return word
 	 */
 	private String getWord(AsyncResult<List<JsonObject>> h) {

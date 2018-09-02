@@ -34,6 +34,6 @@ mvn org.codehaus.mojo:exec-maven-plugin:exec -Dexec.executable=java \
 To test with client request:
 
 ```
-curl -D- http://localhost:9000/analyze -d '{"text":"input"}'
+curl -D- http://localhost:8080/analyze -d '{"text":"input"}'
 ```
 
