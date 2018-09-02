@@ -65,7 +65,7 @@ public class Server extends AbstractVerticle {
 	private void analyze(RoutingContext context) {
 		// get the input in lower case alphabet
 		String text = ((String) context.getBodyAsJson().getValue("text")).toLowerCase();
-		final String[] ans = new String[2];
+		final String[] ans = new String[2];// ans[0] = value, ans[1] = lexical
 
 		// look for the input word in the DB
 		mongoclient.find(COLLECTION, new JsonObject().put("word", text), res -> {
@@ -230,7 +230,7 @@ public class Server extends AbstractVerticle {
 	 * @param s2 String 2
 	 * @return abs of the compare sum
 	 */
-	private static int compareStrings(String s1, String s2) {
+	private int compareStrings(String s1, String s2) {
 		int compareSum = 0;
 		int c1, c2;
 
