@@ -28,9 +28,7 @@ public class Server extends AbstractVerticle {
 	 */
 	@Override
 	public void start(Future<Void> fut) throws Exception {
-
-
-		Router router = Router.router(vertx);
+        Router router = Router.router(vertx);
 
 		// create Http server and listen to 9000 port
 		vertx.createHttpServer().requestHandler(router::accept)
@@ -57,18 +55,6 @@ public class Server extends AbstractVerticle {
 
 		// routing all users POSTs to /analyze
 		router.post("/analyze").handler(this::analyze);
-
-		final FindOptions printOptions = new FindOptions().setSort(new JsonObject().put("word",1));
-		mongoclient.findWithOptions(COLLECTION, new JsonObject(),printOptions, results -> {
-			List<JsonObject> objects = results.result();
-
-			for (Object object: objects.toArray()) {
-				System.out.println(object);
-				mongoclient.removeDocument(COLLECTION, (JsonObject) object, res -> {
-
-				});
-			}
-		});
 	}
 
 
@@ -104,6 +90,13 @@ public class Server extends AbstractVerticle {
 		});
 	}
 
+    /**
+     * Find closest words by lexical and value
+     * @param finalWordVal input word value
+     * @param text input word
+     * @param ans answers array
+     * @param context RoutingContext
+     */
 	private void findAnserws(int finalWordVal, String text, String[] ans, RoutingContext context) {
 		final FindOptions gtfindOptions = new FindOptions().setSort(new JsonObject().put("value",1)).setLimit(1);
 		final FindOptions ltfindOptions = new FindOptions().setSort(new JsonObject().put("value",-1)).setLimit(1);
@@ -113,12 +106,14 @@ public class Server extends AbstractVerticle {
 		// look for the closest word with biggest value than the input
 		mongoclient.findWithOptions(COLLECTION, gtQuery ,gtfindOptions, rG -> {
 			if(!rG.result().isEmpty()){//found biggest value
-				// calc difference to input word value
+
+                // calc difference to input word value
 				int disGt = Integer.parseInt(String.valueOf(rG.result().get(0).getValue("value"))) - finalWordVal;
 
 				// look for closest word with smallest value than the input
 				mongoclient.findWithOptions(COLLECTION,  ltQuery, ltfindOptions, rL ->{
-					if(!rL.result().isEmpty()) {//found lowest value to
+
+				    if(!rL.result().isEmpty()) {//found lowest value to
 						int disLt = finalWordVal - Integer.parseInt(String.valueOf(rL.result().get(0).getValue("value")));
 
 						if (disGt < disLt)//biggest value closer
@@ -129,30 +124,32 @@ public class Server extends AbstractVerticle {
 					}else//only biggest value found
 						ans[0] = getWord(rG);
 
-					lookForLexical(text,ans, context,finalWordVal);
+					lookForLexical(text,ans,finalWordVal, context);
 				});
 
 			}else{// not found biggest value
-				mongoclient.findWithOptions(COLLECTION, ltQuery, ltfindOptions, rL ->{
-					if(!rL.result().isEmpty())
+
+                mongoclient.findWithOptions(COLLECTION, ltQuery, ltfindOptions, rL ->{
+
+                    if(!rL.result().isEmpty())
 						ans[0] = getWord(rL);
 					else // no found match in the DB
 						ans[0] = "null";
 
-					lookForLexical(text,ans,context,finalWordVal);
+					lookForLexical(text,ans,finalWordVal,context);
 				});
 			}
 		});
 	}
 
 	/**
-	 *
+	 * Find closest lexical words in the database
 	 * @param text input word
 	 * @param ans output words
-	 * @param context
-	 * @param finalWordVal
+     * @param finalWordVal input word value
+	 * @param context RoutingContext
 	 */
-	private void lookForLexical(String text, String[] ans, RoutingContext context, int finalWordVal) {
+	private void lookForLexical(String text, String[] ans, int finalWordVal, RoutingContext context) {
 		final FindOptions gtRegFindOptions = new FindOptions().setSort(new JsonObject().put("word", 1)).setLimit(1);
 		final FindOptions ltRegFindOptionslt = new FindOptions().setSort(new JsonObject().put("word", -1)).setLimit(1);
 		JsonObject gtRegQuery = new JsonObject().put("word", new JsonObject().put("$gte", text));
@@ -160,12 +157,14 @@ public class Server extends AbstractVerticle {
 
 		// look for the alphabetic closest word above the input
 		mongoclient.findWithOptions(COLLECTION, gtRegQuery, gtRegFindOptions, gtR -> {
-			if (!gtR.result().isEmpty()) {
+
+		    if (!gtR.result().isEmpty()) {
 				String gWord = getWord(gtR);
 
 				// look for the alphabetic closest word below the input
 				mongoclient.findWithOptions(COLLECTION, ltRegQuery, ltRegFindOptionslt, ltR -> {
-					if (!ltR.result().isEmpty()) {
+
+				    if (!ltR.result().isEmpty()) {
 						String lWord = getWord(ltR);
 						System.out.println(lWord + "(" + compareStrings(text, lWord) + "), " + text + ", " + gWord + "(" + compareStrings(gWord, text) + ")");
 
@@ -184,7 +183,9 @@ public class Server extends AbstractVerticle {
 				});
 
 			} else { // its no word above
+
 				mongoclient.findWithOptions(COLLECTION, ltRegQuery, ltRegFindOptionslt, ltR -> {
+
 					if (!ltR.result().isEmpty())
 						ans[1] = getWord(ltR);
 					else// match found match in the DB
@@ -201,8 +202,8 @@ public class Server extends AbstractVerticle {
 
 	/**
 	 * insert the input word to the database
-	 * @param text
-	 * @param val
+	 * @param text input word
+	 * @param val input word value
 	 */
 	private void insertToDB(String text, int val) {
 
@@ -226,13 +227,14 @@ public class Server extends AbstractVerticle {
 
 	/**
 	 * Compare between two Strings and get the alphabetic difference between them
-	 * @param s1
-	 * @param s2
+	 * @param s1 String 1
+	 * @param s2 String 2
 	 * @return abs of the compare sum
 	 */
 	private static int compareStrings(String s1, String s2) {
 		int compareSum = 0;
 		int c1, c2;
+
 		// calc the difference between chars
 		for(int i = 0; i < s1.length() && i < s2.length(); i++) {
 			c1 = (int) s1.charAt(i);
@@ -253,9 +255,7 @@ public class Server extends AbstractVerticle {
 			}
 			return Math.abs(compareSum);
 		}
-
 		return Math.abs(compareSum);
 	}
-
 }
 
